@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+import uvicorn
 
 from .council import (
     calculate_aggregate_rankings,
@@ -88,3 +89,7 @@ async def conversations_message(conversation_id: str, request: MessageCreateRequ
             "aggregate_rankings": aggregate_rankings,
         },
     }
+
+
+if __name__ == "__main__":
+    uvicorn.run("backend.main:app", host="0.0.0.0", port=8001, reload=False)

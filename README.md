@@ -42,6 +42,8 @@ OPENROUTER_API_KEY=sk-or-v1-...
 
 Get your API key at [openrouter.ai](https://openrouter.ai/). Make sure to purchase the credits you need, or sign up for automatic top up.
 
+If `OPENROUTER_API_KEY` is missing, the app still runs in offline demo mode with synthetic responses so the UI remains testable.
+
 ### 3. Configure Models (Optional)
 
 Edit `backend/config.py` to customize the council:
@@ -78,6 +80,14 @@ npm run dev
 ```
 
 Then open http://localhost:5173 in your browser.
+
+## API Endpoints
+
+- `GET /api/health`
+- `GET /api/conversations`
+- `POST /api/conversations`
+- `GET /api/conversations/{id}`
+- `POST /api/conversations/{id}/message`
 
 ## Tech Stack
 

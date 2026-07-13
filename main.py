@@ -1,5 +1,5 @@
 def main():
-    print("Hello from llm-council!")
+    print("Run `uv run python -m backend.main` to start the API server.")
 
 
 if __name__ == "__main__":

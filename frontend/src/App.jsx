@@ -67,7 +67,7 @@ export default function App() {
       try {
         await api.health()
         await refreshConversations()
-      } catch (err) {
+      } catch {
         setError('Backend is not reachable at http://localhost:8001')
       }
     }

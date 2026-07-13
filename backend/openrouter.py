@@ -33,7 +33,7 @@ async def query_model(model: str, prompt: str, system_prompt: str | None = None)
     }
 
     headers = {
-        "Authorization": f"******",
+        "Authorization": "Bearer " + OPENROUTER_API_KEY,
         "Content-Type": "application/json",
     }
 
