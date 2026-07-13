@@ -1,7 +1,7 @@
 import json
 from datetime import datetime, timezone
 from pathlib import Path
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from .config import MAX_CONVERSATION_MESSAGES
 
@@ -16,6 +16,13 @@ def _now_iso() -> str:
 
 def _conversation_file(conversation_id: str) -> Path:
     return DATA_DIR / f"{conversation_id}.json"
+
+
+def _normalized_conversation_id(conversation_id: str) -> str | None:
+    try:
+        return str(UUID(conversation_id))
+    except Exception:
+        return None
 
 
 def list_conversations() -> list[dict]:
@@ -44,7 +51,10 @@ def create_conversation() -> dict:
 
 
 def get_conversation(conversation_id: str) -> dict | None:
-    file = _conversation_file(conversation_id)
+    normalized = _normalized_conversation_id(conversation_id)
+    if not normalized:
+        return None
+    file = _conversation_file(normalized)
     if not file.exists():
         return None
     return json.loads(file.read_text(encoding="utf-8"))
@@ -56,7 +66,10 @@ def save_conversation(conversation: dict) -> None:
 
 
 def append_message(conversation_id: str, message: dict) -> dict | None:
-    conversation = get_conversation(conversation_id)
+    normalized = _normalized_conversation_id(conversation_id)
+    if not normalized:
+        return None
+    conversation = get_conversation(normalized)
     if not conversation:
         return None
 

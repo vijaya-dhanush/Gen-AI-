@@ -1,4 +1,3 @@
-import re
 from statistics import mean
 
 from .config import CHAIRMAN_MODEL, COUNCIL_MODELS
@@ -13,22 +12,35 @@ def parse_ranking_from_text(text: str) -> list[str]:
     if not text:
         return []
 
+    upper_text = text.upper()
+    marker = "FINAL RANKING:"
     ranking_part = text
-    marker = re.search(r"FINAL\s+RANKING\s*:\s*", text, flags=re.IGNORECASE)
-    if marker:
-        ranking_part = text[marker.end() :]
+    marker_idx = upper_text.find(marker)
+    if marker_idx >= 0:
+        ranking_part = text[marker_idx + len(marker) :]
 
-    numbered = re.findall(r"\d+\.\s*(Response\s+[A-Z])", ranking_part, flags=re.IGNORECASE)
-    if numbered:
-        return [item.title() for item in numbered]
+    extracted: list[str] = []
+    for raw_line in ranking_part.splitlines():
+        line = raw_line.strip()
+        if not line:
+            continue
 
-    plain = re.findall(r"Response\s+[A-Z]", ranking_part, flags=re.IGNORECASE)
-    seen: list[str] = []
-    for item in plain:
-        normalized = item.title()
-        if normalized not in seen:
-            seen.append(normalized)
-    return seen
+        if ". " in line:
+            _, line = line.split(". ", 1)
+
+        normalized = line.upper().strip()
+        if normalized.startswith("RESPONSE ") and len(normalized) >= len("RESPONSE A"):
+            suffix = normalized[len("RESPONSE ") :].strip()
+            if not suffix:
+                continue
+            label_char = suffix[0]
+            if not ("A" <= label_char <= "Z"):
+                continue
+            label = f"Response {label_char}"
+            if label not in extracted:
+                extracted.append(label)
+
+    return extracted
 
 
 async def stage1_collect_responses(user_prompt: str) -> list[dict]:
